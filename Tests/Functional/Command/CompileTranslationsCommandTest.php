@@ -3,11 +3,7 @@
 namespace Modera\TranslationsBundle\Tests\Functional\Command;
 
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Translation\MessageCatalogue;
-
 
 /**
  * @author    Sergei Vizel <sergei.vizel@modera.org>
@@ -15,19 +11,6 @@ use Symfony\Component\Translation\MessageCatalogue;
  */
 class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
 {
-    private function launchCompileCommand()
-    {
-        $app = new Application(self::$kernel->getContainer()->get('kernel'));
-        $app->setAutoExit(false);
-        $input = new ArrayInput(array(
-            'command' => 'modera:translations:compile',
-        ));
-        $input->setInteractive(false);
-
-        $result = $app->run($input, new NullOutput());
-        $this->assertEquals(0, $result);
-    }
-
     public function testCompile()
     {
         $fs = new Filesystem();
@@ -35,14 +18,14 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
         $basePath = dirname(self::$kernel->getContainer()->get('kernel')->getRootdir());
 
         $bundleName = 'ModeraTranslationsDummyBundle';
-        $bundleTransDir = $resourcesDir . '/translations' . '/' . $bundleName;
-        $bundleTransPath = $basePath . '/' . $bundleTransDir;
+        $bundleTransDir = $resourcesDir.'/translations'.'/'.$bundleName;
+        $bundleTransPath = $basePath.'/'.$bundleTransDir;
 
         $this->launchImportCommand();
         $this->launchCompileCommand();
 
         $this->assertTrue($fs->exists($bundleTransPath));
-        $this->assertTrue($fs->exists($bundleTransPath . '/messages.en.yml'));
+        $this->assertTrue($fs->exists($bundleTransPath.'/messages.en.yml'));
 
         $catalogue = new MessageCatalogue('en');
         $loader = self::$kernel->getContainer()->get('translation.loader');
@@ -57,4 +40,4 @@ class CompileTranslationsCommandTest extends ImportTranslationsCommandTest
             $fs->remove($bundleTransPath);
         }
     }
-} 
+}
